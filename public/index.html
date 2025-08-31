@@ -1,0 +1,23 @@
+<body>
+  <div id="message">
+    <h2>Bot OKX</h2>
+    <h1>Consulta de Balance</h1>
+    <button onclick="consultarBalance()">Consultar Balance</button>
+    <pre id="resultado"></pre>
+  </div>
+
+  <script>
+  async function consultarBalance() {
+    try {
+      const res = await fetch('http://127.0.0.1:5000/balance'); // ← esto lo cambiaremos luego por Railway
+      const data = await res.json();
+      const bnb = data.data[0].details.find(item => item.ccy === 'BNB');
+      document.getElementById('resultado').textContent = 
+        `BNB disponible: ${bnb.availBal} (${bnb.eqUsd} USD)`;
+    } catch (error) {
+      document.getElementById('resultado').textContent = 'Error al consultar el balance';
+      console.error(error);
+    }
+  }
+</script>
+</body>
