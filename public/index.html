@@ -11,11 +11,11 @@
   </div>
 
   <script>
-    const backendURL = 'https://okx-bot-backend.up.railway.app';
+    const backendURL = 'https://okx-bot-backend-limpio.up.railway.app';
 
     async function consultarBalance() {
       try {
-        const res = await fetch(`${backendURL}/balance`);
+        const res = await fetch(`${backendURL}/balance`)
         const data = await res.json();
         const bnb = data.data[0].details.find(item => item.ccy === 'BNB');
         document.getElementById('resultado').textContent =
