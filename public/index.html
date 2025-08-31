@@ -2,22 +2,68 @@
   <div id="message">
     <h2>Bot OKX</h2>
     <h1>Consulta de Balance</h1>
-    <button onclick="consultarBalance()">Consultar Balance</button>
+    <button onclick="consultarBalance()">Consultar BNB</button>
+    <button onclick="consultarMoneda('BTC')">Consultar BTC</button>
+    <button onclick="consultarMoneda('USDT')">Consultar USDT</button>
+    <button onclick="verTimestamp()">Ver Timestamp</button>
+    <button onclick="pingBackend()">Ping al Backend</button>
     <pre id="resultado"></pre>
   </div>
 
   <script>
-  async function consultarBalance() {
-    try {
-      const res = await fetch('http://127.0.0.1:5000/balance'); // ← esto lo cambiaremos luego por Railway
-      const data = await res.json();
-      const bnb = data.data[0].details.find(item => item.ccy === 'BNB');
-      document.getElementById('resultado').textContent = 
-        `BNB disponible: ${bnb.availBal} (${bnb.eqUsd} USD)`;
-    } catch (error) {
-      document.getElementById('resultado').textContent = 'Error al consultar el balance';
-      console.error(error);
+    const backendURL = 'https://okx-bot-backend.up.railway.app';
+
+    async function consultarBalance() {
+      try {
+        const res = await fetch(`${backendURL}/balance`);
+        const data = await res.json();
+        const bnb = data.data[0].details.find(item => item.ccy === 'BNB');
+        document.getElementById('resultado').textContent =
+          `BNB disponible: ${bnb.availBal} (${bnb.eqUsd} USD)`;
+      } catch (error) {
+        document.getElementById('resultado').textContent = 'Error al consultar el balance';
+        console.error(error);
+      }
     }
-  }
-</script>
+
+    async function consultarMoneda(moneda) {
+      try {
+        const res = await fetch(`${backendURL}/balance/${moneda}`);
+        const data = await res.json();
+        if (data.error) {
+          document.getElementById('resultado').textContent = data.error;
+        } else {
+          document.getElementById('resultado').textContent =
+            `${moneda} disponible: ${data.availBal} (${data.eqUsd} USD)`;
+        }
+      } catch (error) {
+        document.getElementById('resultado').textContent = `Error al consultar ${moneda}`;
+        console.error(error);
+      }
+    }
+
+    async function verTimestamp() {
+      try {
+        const res = await fetch(`${backendURL}/timestamp`);
+        const data = await res.json();
+        document.getElementById('resultado').textContent =
+          `Timestamp actual (UTC): ${data.timestamp}`;
+      } catch (error) {
+        document.getElementById('resultado').textContent = 'Error al obtener timestamp';
+        console.error(error);
+      }
+    }
+
+    async function pingBackend() {
+      try {
+        const res = await fetch(`${backendURL}/ping`);
+        const data = await res.json();
+        document.getElementById('resultado').textContent =
+          `Estado: ${data.status} - ${data.message}`;
+      } catch (error) {
+        document.getElementById('resultado').textContent = 'Error al hacer ping';
+        console.error(error);
+      }
+    }
+  </script>
 </body>
